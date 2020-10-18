@@ -57,7 +57,7 @@ namespace AerospikeBenchmarks
         }
 
         [Benchmark]
-        public void NewtonsoftDeserializationBenchmark()
+        public void NewtonsoftJsonDeserializationBenchmark()
         {
             Key key = new Key(Namespace, Set, NewtonsoftBenchmarkKey);
             Record record = _client.Get(null, key);
@@ -103,7 +103,7 @@ namespace AerospikeBenchmarks
                 foreach (KeyValuePair<string, object> product in record.bins)
                 {
                     var prod = (string)product.Value;
-                    var deserializedProdct = JsonConvert.DeserializeObject<ProductJson>(prod);
+                    var deserializedProdct = System.Text.Json.JsonSerializer.Deserialize<ProductJson>(prod);
                 }
             }
         }
