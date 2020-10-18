@@ -19,12 +19,12 @@ You'll need to point the Aerospike client to your cluster's hostname and port. I
 You can view benchmark results derived from running on my machines listed below. For reference, I have also included the specifications of my Aerospike server.
 
 Aerospike Server
-Type: VM
-Build: Aerospike Community Edition 4.5.2.2
-OS: CentOS 6
-CPU: 2 cores of an Intel Core i5-3450
-RAM: 2GB
-Disk: SSD
+* Type: VM
+* Build: Aerospike Community Edition 4.5.2.2
+* OS: CentOS 6
+* CPU: 2 cores of an Intel Core i5-3450
+* RAM: 2GB
+* Disk: SSD
 
 https://shravanj.com/dev/aerospike/benchmarks/results.html
 
