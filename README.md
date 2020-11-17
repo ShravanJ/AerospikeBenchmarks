@@ -14,6 +14,7 @@ You'll need to point the Aerospike client to your cluster's hostname and port. I
 	* System.Text.Json
 	* MessagePack
 	* Protobuf-net
+* Scan vs Get to retrieve all records and bins in a set
 
 # Benchmark Results
 You can view benchmark results derived from running on my machines listed below. For reference, I have also included the specifications of my Aerospike server.
@@ -26,7 +27,9 @@ Aerospike Server
 * RAM: 2GB
 * Disk: SSD
 
-https://shravanj.com/dev/aerospike/benchmarks/results.html
+https://shravanj.com/dev/aerospike/benchmarks/serialization.html
+
+https://shravanj.com/dev/aerospike/benchmarks/scanvsget.html
 
 # Special Thanks
 Special thanks to [Jeremy Cantu](https://github.com/Jac21) and his project [BenchmarkDotNetDeepDive](https://github.com/Jac21/CSharpMenagerie/tree/master/Reference/BenchmarkDotNetDeepDive) for the inspiration and initial setup!
