@@ -30,12 +30,72 @@ namespace AerospikeBenchmarks
         private const string MessagePackBenchmarkKey = "MessagePackBenchmark";
         private const string DotNetJsonBenchmarkKey = "DotNetJsonBenchmark";
 
+        // Aerospike Scan/Query benchmark keys
+        private const string IncrementalKeyBase = "pk";
+        private int TestObjectCount = 5000;
+
         [GlobalSetup]
         public void Setup()
         {
-            _client = new AerospikeClient("192.168.1.25", 3000);
+            _client = new AerospikeClient("192.168.1.54", 3000);
+            CreateTestObjectsEnMasse();
         }
 
+        public void CreateTestObjectsEnMasse()
+        {
+            for (int x = 0; x < TestObjectCount; x++)
+            {
+                ProductProtobuf product = new ProductProtobuf()
+                {
+                    Id = x,
+                    Description = "The next generation of widgets are here, order one today!",
+                    Manufacturer = "ACME Corp",
+                    Name = "Widget 2.0",
+                    Price = 5.00f
+                };
+
+                var serializedProdct = JsonConvert.SerializeObject(product);
+
+                Bin bin = new Bin(Bin, serializedProdct);
+                string testKey = $"{IncrementalKeyBase}-{x}";
+                Key key = new Key(Namespace, Set, testKey);
+
+                _client.Put(null, key, bin);
+            }
+        }
+
+        [Benchmark]
+        public void ScanBenchmark()
+        {
+            ScanPolicy policy = new ScanPolicy();
+            policy.concurrentNodes = true;
+            policy.priority = Priority.DEFAULT;
+            policy.includeBinData = true;
+
+            _client.ScanAll(policy, Namespace, Set, ScanCallback);
+        }
+
+        [Benchmark]
+        public void GetBenchmark()
+        {
+            for (int x = 0; x < TestObjectCount; x++)
+            {
+                string testKey = $"{IncrementalKeyBase}-{x}";
+                Key key = new Key(Namespace, Set, testKey);
+                Record record = _client.Get(null, key);
+
+                if (record != null)
+                {
+                    foreach (KeyValuePair<string, object> product in record.bins)
+                    {
+                        var prod = (string)product.Value;
+                        var deserializedProdct = JsonConvert.DeserializeObject<ProductJson>(prod);
+                    }
+                }
+            }
+        }
+
+        
         [Benchmark]
         public void NewtonsoftJsonSerializationBenchmark()
         {
@@ -194,6 +254,18 @@ namespace AerospikeBenchmarks
             using (var stream = new MemoryStream(serializedData))
             {
                 return Serializer.Deserialize<ProductProtobuf>(stream);
+            }
+        }
+
+        public void ScanCallback(Key key, Record record)
+        {
+            if (record != null)
+            {
+                foreach (KeyValuePair<string, object> product in record.bins)
+                {
+                    var prod = (string)product.Value;
+                    var deserializedProdct = JsonConvert.DeserializeObject<ProductJson>(prod);
+                }
             }
         }
     }
